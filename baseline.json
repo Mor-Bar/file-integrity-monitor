@@ -1,0 +1,22 @@
+{
+  "metadata": {
+    "created": "2026-01-13T01:49:57.588728",
+    "directory": "C:\\Users\\morba\\VScodeProjects\\File Integrity Monitor\\file-integrity-monitor\\src",
+    "algorithm": "sha256",
+    "file_count": 2
+  },
+  "files": {
+    "src\\file_monitor.py": {
+      "hash": "2fed4727f5679a7b2f6135de25426865ad00e87e7febbd9d2815d2147b7fc0b2",
+      "size": 6848,
+      "modified": "2026-01-13T01:48:37.492331",
+      "algorithm": "sha256"
+    },
+    "src\\__init__.py": {
+      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "modified": "2026-01-13T01:41:06.605590",
+      "algorithm": "sha256"
+    }
+  }
+}
