@@ -1,0 +1,36 @@
+# File Integrity Monitor - Ignore Patterns
+# This file works like .gitignore
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Project specific
+baseline.json
+file_monitor.log
+
+# Git
+.git/
+.gitignore
+.gitattributes

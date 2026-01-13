@@ -57,9 +57,14 @@ cover/
 
 # Django stuff:
 *.log
+file_monitor.log
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+
+# Project specific - Baseline files (contain sensitive paths)
+baseline.json
+*.baseline.json
 
 # Flask stuff:
 instance/

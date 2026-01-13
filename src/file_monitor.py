@@ -1,224 +1,96 @@
 """
-File Integrity Monitor - Baseline Creation
-A tool to create and manage file integrity baselines
+File Integrity Monitor - Main CLI
+A tool to create baselines and detect file changes
 """
 
-import hashlib
-import os
-import json
-from datetime import datetime
-from pathlib import Path
+from .hash_calculator import calculate_file_hash
+from .baseline import create_baseline
+from .detector import compare_with_baseline
+from .display import display_baseline, display_changes
 
 
-def calculate_file_hash(file_path, algorithm='sha256'):
-    """
-    Calculate hash of a file using specified algorithm.
-    
-    Args:
-        file_path (str): Path to the file
-        algorithm (str): Hash algorithm to use (default: sha256)
-    
-    Returns:
-        str: Hexadecimal hash string
-    
-    Raises:
-        FileNotFoundError: If file doesn't exist
-        PermissionError: If file cannot be read
-    """
-    if not os.path.exists(file_path):
-        raise FileNotFoundError(f"File not found: {file_path}")
-    
-    if not os.path.isfile(file_path):
-        raise ValueError(f"Path is not a file: {file_path}")
-    
-    hash_obj = hashlib.new(algorithm)
-    
-    try:
-        with open(file_path, 'rb') as f:
-            chunk_size = 65536
-            while chunk := f.read(chunk_size):
-                hash_obj.update(chunk)
-    except PermissionError:
-        raise PermissionError(f"Permission denied: {file_path}")
-    
-    return hash_obj.hexdigest()
-
-
-def scan_directory(directory_path, algorithm='sha256'):
-    """
-    Scan a directory and calculate hashes for all files.
-    
-    Args:
-        directory_path (str): Path to directory to scan
-        algorithm (str): Hash algorithm to use
-    
-    Returns:
-        dict: Dictionary with file paths as keys and hash info as values
-    """
-    if not os.path.exists(directory_path):
-        raise FileNotFoundError(f"Directory not found: {directory_path}")
-    
-    if not os.path.isdir(directory_path):
-        raise ValueError(f"Path is not a directory: {directory_path}")
-    
-    results = {}
-    file_count = 0
-    
-    print(f"\n🔍 Scanning directory: {directory_path}")
-    print("=" * 50)
-    
-    # Walk through directory
-    for root, dirs, files in os.walk(directory_path):
-        for filename in files:
-            file_path = os.path.join(root, filename)
-            
-            try:
-                # Calculate hash
-                file_hash = calculate_file_hash(file_path, algorithm)
-                
-                # Get file info
-                file_stat = os.stat(file_path)
-                
-                # Store results
-                results[file_path] = {
-                    'hash': file_hash,
-                    'size': file_stat.st_size,
-                    'modified': datetime.fromtimestamp(file_stat.st_mtime).isoformat(),
-                    'algorithm': algorithm
-                }
-                
-                file_count += 1
-                print(f"✓ [{file_count}] {filename}")
-                
-            except (PermissionError, OSError) as e:
-                print(f"✗ Skipped {filename}: {e}")
-                continue
-    
-    print(f"\n📊 Total files scanned: {file_count}")
-    return results
-
-
-def create_baseline(directory_path, baseline_file='baseline.json', algorithm='sha256'):
-    """
-    Create a baseline snapshot of a directory.
-    
-    Args:
-        directory_path (str): Directory to scan
-        baseline_file (str): Output JSON file path
-        algorithm (str): Hash algorithm to use
-    
-    Returns:
-        dict: Baseline data
-    """
+def print_menu():
+    """Print the main menu."""
     print("\n" + "=" * 50)
-    print("Creating Baseline")
+    print("File Integrity Monitor v0.3")
     print("=" * 50)
-    
-    # Scan directory
-    scan_results = scan_directory(directory_path, algorithm)
-    
-    # Create baseline structure
-    baseline = {
-        'metadata': {
-            'created': datetime.now().isoformat(),
-            'directory': os.path.abspath(directory_path),
-            'algorithm': algorithm,
-            'file_count': len(scan_results)
-        },
-        'files': scan_results
-    }
-    
-    # Save to JSON file
-    with open(baseline_file, 'w', encoding='utf-8') as f:
-        json.dump(baseline, f, indent=2, ensure_ascii=False)
-    
-    print(f"\n✓ Baseline saved to: {baseline_file}")
-    print(f"✓ Files tracked: {len(scan_results)}")
-    
-    return baseline
-
-
-def display_baseline(baseline_file='baseline.json'):
-    """
-    Display the contents of a baseline file.
-    
-    Args:
-        baseline_file (str): Path to baseline JSON file
-    """
-    if not os.path.exists(baseline_file):
-        print(f"✗ Baseline file not found: {baseline_file}")
-        return
-    
-    with open(baseline_file, 'r', encoding='utf-8') as f:
-        baseline = json.load(f)
-    
-    print("\n" + "=" * 50)
-    print("Baseline Information")
-    print("=" * 50)
-    
-    metadata = baseline['metadata']
-    print(f"\n📅 Created: {metadata['created']}")
-    print(f"📁 Directory: {metadata['directory']}")
-    print(f"🔐 Algorithm: {metadata['algorithm']}")
-    print(f"📊 Files tracked: {metadata['file_count']}")
-    
-    print("\n" + "-" * 50)
-    print("Files:")
-    print("-" * 50)
-    
-    for file_path, info in baseline['files'].items():
-        filename = os.path.basename(file_path)
-        print(f"\n📄 {filename}")
-        print(f"   Hash: {info['hash'][:16]}...")
-        print(f"   Size: {info['size']} bytes")
-        print(f"   Modified: {info['modified']}")
-
-
-def main():
-    """Main function with menu"""
-    print("=" * 50)
-    print("File Integrity Monitor v0.2")
-    print("=" * 50)
-    
     print("\nOptions:")
     print("1. Calculate hash of single file")
     print("2. Create baseline for directory")
     print("3. Display baseline")
+    print("4. Check for changes")
+    print("0. Exit")
+
+
+def handle_single_file_hash():
+    """Handle single file hash calculation."""
+    file_path = input("\nEnter file path: ").strip()
+    try:
+        file_hash = calculate_file_hash(file_path)
+        print(f"\n✓ File: {file_path}")
+        print(f"✓ SHA256: {file_hash}")
+    except Exception as e:
+        print(f"\n✗ Error: {e}")
+
+
+def handle_create_baseline():
+    """Handle baseline creation."""
+    directory = input("\nEnter directory path to scan: ").strip()
+    baseline_file = input("Baseline filename (default: baseline.json): ").strip()
+    if not baseline_file:
+        baseline_file = 'baseline.json'
     
-    choice = input("\nEnter choice (1-3): ").strip()
+    try:
+        create_baseline(directory, baseline_file)
+    except Exception as e:
+        print(f"\n✗ Error: {e}")
+
+
+def handle_display_baseline():
+    """Handle baseline display."""
+    baseline_file = input("\nBaseline filename (default: baseline.json): ").strip()
+    if not baseline_file:
+        baseline_file = 'baseline.json'
     
-    if choice == '1':
-        # Single file hash
-        file_path = input("Enter file path: ").strip()
-        try:
-            file_hash = calculate_file_hash(file_path)
-            print(f"\n✓ File: {file_path}")
-            print(f"✓ SHA256: {file_hash}")
-        except Exception as e:
-            print(f"\n✗ Error: {e}")
+    display_baseline(baseline_file)
+
+
+def handle_check_changes():
+    """Handle change detection."""
+    directory = input("\nEnter directory path to check: ").strip()
+    baseline_file = input("Baseline filename (default: baseline.json): ").strip()
+    if not baseline_file:
+        baseline_file = 'baseline.json'
     
-    elif choice == '2':
-        # Create baseline
-        directory = input("Enter directory path to scan: ").strip()
-        baseline_file = input("Baseline filename (default: baseline.json): ").strip()
-        if not baseline_file:
-            baseline_file = 'baseline.json'
+    try:
+        changes = compare_with_baseline(directory, baseline_file)
+        display_changes(changes)
+    except Exception as e:
+        print(f"\n✗ Error: {e}")
+
+
+def main():
+    """Main function with menu loop."""
+    while True:
+        print_menu()
+        choice = input("\nEnter choice (0-4): ").strip()
         
-        try:
-            create_baseline(directory, baseline_file)
-        except Exception as e:
-            print(f"\n✗ Error: {e}")
-    
-    elif choice == '3':
-        # Display baseline
-        baseline_file = input("Baseline filename (default: baseline.json): ").strip()
-        if not baseline_file:
-            baseline_file = 'baseline.json'
+        if choice == '0':
+            print("\n👋 Goodbye!")
+            break
+        elif choice == '1':
+            handle_single_file_hash()
+        elif choice == '2':
+            handle_create_baseline()
+        elif choice == '3':
+            handle_display_baseline()
+        elif choice == '4':
+            handle_check_changes()
+        else:
+            print("\n✗ Invalid choice! Please enter 0-4.")
         
-        display_baseline(baseline_file)
-    
-    else:
-        print("\n✗ Invalid choice!")
+        # Pause before showing menu again
+        input("\nPress Enter to continue...")
 
 
 if __name__ == "__main__":
