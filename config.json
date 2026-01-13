@@ -1,0 +1,21 @@
+{
+  "default_algorithm": "sha256",
+  "default_baseline_file": "baseline.json",
+  "default_ignore_file": ".fimignore",
+  "chunk_size": 65536,
+  "logging": {
+    "enabled": true,
+    "log_file": "file_monitor.log",
+    "log_level": "INFO",
+    "console_output": true
+  },
+  "display": {
+    "separator_length": 50,
+    "hash_display_length": 16,
+    "verbose": true
+  },
+  "ignore_patterns": {
+    "use_default_patterns": true,
+    "custom_patterns": []
+  }
+}
