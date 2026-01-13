@@ -4,6 +4,7 @@ Directory scanning utilities for file integrity monitoring.
 
 import os
 from datetime import datetime
+from tqdm import tqdm
 from .hash_calculator import calculate_file_hash
 from .ignore_handler import IgnoreHandler
 from .logger import logger
@@ -44,47 +45,47 @@ def scan_directory(directory_path, algorithm='sha256', verbose=True, ignore_hand
         print(f"\n🔍 Scanning directory: {directory_path}")
         print("=" * 50)
     
-    # Walk through directory
+    # First pass: count total files and build file list
+    file_list = []
     for root, dirs, files in os.walk(directory_path):
-        # Filter out ignored directories (modify dirs in-place to prevent walking into them)
+        # Filter out ignored directories (modify in-place to prevent walking into them)
         dirs[:] = [d for d in dirs if not ignore_handler.should_ignore(os.path.join(root, d))]
         
         for filename in files:
             file_path = os.path.join(root, filename)
+            if not ignore_handler.should_ignore(file_path):
+                file_list.append(file_path)
+    
+    # Second pass: process files with progress bar
+    if verbose and len(file_list) > 0:
+        pbar = tqdm(file_list, desc="Processing files", unit="file", 
+                   ncols=100, bar_format='{desc}: {percentage:3.0f}%|{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]')
+    else:
+        pbar = file_list
+    
+    for file_path in pbar:
+        try:
+            # Calculate hash
+            file_hash = calculate_file_hash(file_path, algorithm)
             
-            # Check if file should be ignored
-            if ignore_handler.should_ignore(file_path):
-                logger.debug(f"Ignoring file: {file_path}")
-                skipped_count += 1
-                continue
+            # Get file info
+            file_stat = os.stat(file_path)
             
-            try:
-                # Calculate hash
-                file_hash = calculate_file_hash(file_path, algorithm)
-                
-                # Get file info
-                file_stat = os.stat(file_path)
-                
-                # Store results
-                results[file_path] = {
-                    'hash': file_hash,
-                    'size': file_stat.st_size,
-                    'modified': datetime.fromtimestamp(file_stat.st_mtime).isoformat(),
-                    'algorithm': algorithm
-                }
-                
-                file_count += 1
-                if verbose:
-                    print(f"✓ [{file_count}] {filename}")
-                
-                logger.debug(f"Scanned file: {file_path}")
-                
-            except (PermissionError, OSError) as e:
-                if verbose:
-                    print(f"✗ Skipped {filename}: {e}")
-                logger.warning(f"Could not scan {file_path}: {e}")
-                skipped_count += 1
-                continue
+            # Store results
+            results[file_path] = {
+                'hash': file_hash,
+                'size': file_stat.st_size,
+                'modified': datetime.fromtimestamp(file_stat.st_mtime).isoformat(),
+                'algorithm': algorithm
+            }
+            
+            file_count += 1
+            logger.debug(f"Scanned file: {file_path}")
+            
+        except (PermissionError, OSError) as e:
+            logger.warning(f"Could not scan {file_path}: {e}")
+            skipped_count += 1
+            continue
     
     if verbose:
         print(f"\n📊 Total files scanned: {file_count}")

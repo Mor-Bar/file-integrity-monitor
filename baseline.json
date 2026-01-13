@@ -1,21 +1,111 @@
 {
   "metadata": {
-    "created": "2026-01-13T01:49:57.588728",
+    "created": "2026-01-13T18:15:18.138427",
     "directory": "C:\\Users\\morba\\VScodeProjects\\File Integrity Monitor\\file-integrity-monitor\\src",
     "algorithm": "sha256",
-    "file_count": 2
+    "file_count": 11,
+    "ignore_patterns": [
+      "__pycache__",
+      "*.pyc",
+      "*.pyo",
+      ".git",
+      ".gitignore",
+      ".DS_Store",
+      "Thumbs.db",
+      "*.log",
+      ".vscode",
+      ".idea",
+      "node_modules",
+      "venv",
+      "env",
+      ".env",
+      "__pycache__",
+      "*.pyc",
+      "*.pyo",
+      "*.pyd",
+      ".Python",
+      "venv/",
+      "env/",
+      "ENV/",
+      ".vscode/",
+      ".idea/",
+      "*.swp",
+      "*.swo",
+      ".DS_Store",
+      "Thumbs.db",
+      "*.log",
+      "baseline.json",
+      "file_monitor.log",
+      ".git/",
+      ".gitignore",
+      ".gitattributes"
+    ]
   },
   "files": {
+    "src\\baseline.py": {
+      "hash": "e692ef57dd11b8ddb995e94b1f2b3a6b5a7e740f189ca7110b2aa51d56c69e69",
+      "size": 2930,
+      "modified": "2026-01-13T14:18:40.613520",
+      "algorithm": "sha256"
+    },
+    "src\\config_loader.py": {
+      "hash": "9eae8ee9662387ec512e9e3165fdbb9493daf40e9cc30c4f843b1b7d6de5aada",
+      "size": 4072,
+      "modified": "2026-01-13T15:05:52.033404",
+      "algorithm": "sha256"
+    },
+    "src\\constants.py": {
+      "hash": "7eb23213cdb0d22e3015e92fd43391e9ebbab447b0626959d2b664b9582faa53",
+      "size": 1014,
+      "modified": "2026-01-13T14:17:01.703558",
+      "algorithm": "sha256"
+    },
+    "src\\detector.py": {
+      "hash": "8b6e249413c91dc4738f84ad37e9bb499c46771157b6e99aa5a5736846a55e04",
+      "size": 3411,
+      "modified": "2026-01-13T14:19:00.540186",
+      "algorithm": "sha256"
+    },
+    "src\\display.py": {
+      "hash": "2cd6b1c7844242d5a96434089ad1174386c7e59fa030b094019d00033b2c3b42",
+      "size": 4472,
+      "modified": "2026-01-13T14:19:55.848582",
+      "algorithm": "sha256"
+    },
     "src\\file_monitor.py": {
-      "hash": "2fed4727f5679a7b2f6135de25426865ad00e87e7febbd9d2815d2147b7fc0b2",
-      "size": 6848,
-      "modified": "2026-01-13T01:48:37.492331",
+      "hash": "d00697e21b19eea93b39186d09ecfded327ff85d105a2148b7b014e839e5bff0",
+      "size": 7429,
+      "modified": "2026-01-13T15:17:23.654338",
+      "algorithm": "sha256"
+    },
+    "src\\hash_calculator.py": {
+      "hash": "05967dd683f171711b0bff8fb415cbe0ffe4ef966b297d504f4374dbbe312caa",
+      "size": 1690,
+      "modified": "2026-01-13T14:18:12.468863",
+      "algorithm": "sha256"
+    },
+    "src\\ignore_handler.py": {
+      "hash": "0eb971520ae31d5d6282978cff077b5f1ef3cdb93dcc1f35c066b4639d462ab5",
+      "size": 2935,
+      "modified": "2026-01-13T14:17:52.473437",
+      "algorithm": "sha256"
+    },
+    "src\\logger.py": {
+      "hash": "4af75308edd6d43519cd42418dd61b9feea27cc37e60d87a6651be0e686eeca4",
+      "size": 1550,
+      "modified": "2026-01-13T14:17:28.144656",
+      "algorithm": "sha256"
+    },
+    "src\\scanner.py": {
+      "hash": "b3d9b46c2a43b90c3628b4afaba21ae937af9d10a98e1de4c81ba2c58b752f11",
+      "size": 3477,
+      "modified": "2026-01-13T18:14:49.777855",
       "algorithm": "sha256"
     },
     "src\\__init__.py": {
-      "hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "size": 0,
-      "modified": "2026-01-13T01:41:06.605590",
+      "hash": "4ae103bac44a9cc953adfeee2320690ef435855cc3207d29e321fbd3c8f41b50",
+      "size": 32,
+      "modified": "2026-01-13T14:01:31.472029",
       "algorithm": "sha256"
     }
   }
